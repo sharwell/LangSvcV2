@@ -69,9 +69,9 @@
             throw new NotImplementedException();
         }
 
-        public ReadOnlyCollection<ExceptionTableEntry> GetExceptionTable()
+        public bool TryGetExceptionTable(out ReadOnlyCollection<ExceptionTableEntry> exceptionTable)
         {
-            Contract.Ensures(Contract.Result<ReadOnlyCollection<ExceptionTableEntry>>() != null);
+            Contract.Ensures(!Contract.Result<bool>() || Contract.ValueAtReturn(out exceptionTable) != null);
 
             throw new NotImplementedException();
         }

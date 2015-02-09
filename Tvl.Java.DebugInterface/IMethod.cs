@@ -42,7 +42,7 @@
         /// </summary>
         byte[] GetBytecodes();
 
-        ReadOnlyCollection<ExceptionTableEntry> GetExceptionTable();
+        bool TryGetExceptionTable(out ReadOnlyCollection<ExceptionTableEntry> exceptionTable);
 
         /// <summary>
         /// Determine if this method is abstract.

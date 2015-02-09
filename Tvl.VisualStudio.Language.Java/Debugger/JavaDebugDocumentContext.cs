@@ -13,6 +13,7 @@
     using Tvl.Collections;
     using Tvl.Java.DebugInterface;
     using Tvl.Java.DebugInterface.Types.Analysis;
+    using Tvl.Java.DebugInterface.Types.Loader;
     using File = System.IO.File;
 
     [ComVisible(true)]
@@ -258,9 +259,11 @@
                     byte[] bytecode = _location.GetMethod().GetBytecodes();
                     DisassembledMethod disassembledMethod = BytecodeDisassembler.Disassemble(bytecode);
 
-                    var constantPool = _location.GetDeclaringType().GetConstantPool();
-                    var exceptionTable = _location.GetMethod().GetExceptionTable();
+                    ReadOnlyCollection<ExceptionTableEntry> exceptionTable;
+                    if (!_location.GetMethod().TryGetExceptionTable(out exceptionTable))
+                        exceptionTable = new ReadOnlyCollection<ExceptionTableEntry>(new ExceptionTableEntry[0]);
 
+                    var constantPool = _location.GetDeclaringType().GetConstantPool();
                     ImmutableList<int?> evaluationStackDepths = BytecodeDisassembler.GetEvaluationStackDepths(disassembledMethod, constantPool, exceptionTable);
                     ReadOnlyCollection<ILocation> locations = _location.GetMethod().GetLineLocations();
 

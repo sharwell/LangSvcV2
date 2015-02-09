@@ -526,8 +526,16 @@
             if (getType)
             {
                 pPropertyInfo[0].bstrType = _evaluatedExpression.ValueType.GetName();
-                if (_evaluatedExpression.Value != null && !_evaluatedExpression.Value.GetValueType().Equals(_evaluatedExpression.ValueType))
-                    pPropertyInfo[0].bstrType += " {" + _evaluatedExpression.Value.GetValueType().GetName() + "}";
+
+                try
+                {
+                    if (_evaluatedExpression.Value != null && !_evaluatedExpression.Value.GetValueType().Equals(_evaluatedExpression.ValueType))
+                        pPropertyInfo[0].bstrType += " {" + _evaluatedExpression.Value.GetValueType().GetName() + "}";
+                }
+                catch (DebuggerException ex)
+                {
+                    pPropertyInfo[0].bstrType += " {?" + ex + "?}";
+                }
 
                 pPropertyInfo[0].dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_TYPE;
             }

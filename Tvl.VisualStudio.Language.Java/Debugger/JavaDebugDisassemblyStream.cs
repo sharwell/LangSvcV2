@@ -11,6 +11,7 @@
     using Tvl.Java.DebugInterface;
     using Tvl.Java.DebugInterface.Types;
     using Tvl.Java.DebugInterface.Types.Analysis;
+    using Tvl.Java.DebugInterface.Types.Loader;
 
     [ComVisible(true)]
     public class JavaDebugDisassemblyStream : IDebugDisassemblyStream2
@@ -30,9 +31,11 @@
             _bytecode = _executionContext.Location.GetMethod().GetBytecodes();
             _disassembledMethod = BytecodeDisassembler.Disassemble(_bytecode);
 
-            var constantPool = executionContext.Location.GetDeclaringType().GetConstantPool();
-            var exceptionTable = executionContext.Location.GetMethod().GetExceptionTable();
+            ReadOnlyCollection<ExceptionTableEntry> exceptionTable;
+            if (!executionContext.Location.GetMethod().TryGetExceptionTable(out exceptionTable))
+                exceptionTable = new ReadOnlyCollection<ExceptionTableEntry>(new ExceptionTableEntry[0]);
 
+            var constantPool = executionContext.Location.GetDeclaringType().GetConstantPool();
             _evaluationStackDepths = BytecodeDisassembler.GetEvaluationStackDepths(_disassembledMethod, constantPool, exceptionTable);
         }
 
@@ -210,7 +213,8 @@
 
                 if (dwFields.GetOpCode())
                 {
-                    prgDisassembly[i].bstrOpcode = string.Format("[{0}]{1}", _evaluationStackDepths[_currentInstructionIndex + i], instruction.OpCode.Name ?? "???");
+                    string depth = _evaluationStackDepths != null ? string.Format("[{0}]", _evaluationStackDepths[_currentInstructionIndex + i]) : string.Empty;
+                    prgDisassembly[i].bstrOpcode = string.Format("{0}{1}", depth, instruction.OpCode.Name ?? "???");
                     prgDisassembly[i].dwFields |= enum_DISASSEMBLY_STREAM_FIELDS.DSF_OPCODE;
                 }
 

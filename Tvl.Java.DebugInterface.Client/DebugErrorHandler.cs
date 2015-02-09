@@ -15,7 +15,7 @@
                 return;
 
             case Error.InvalidThread:
-                break;
+                throw new InternalException((int)error, error.ToString());
 
             case Error.InvalidThreadGroup:
                 break;

@@ -2,6 +2,7 @@
 {
     public enum ReferenceTypeCommand : byte
     {
+        Invalid = 0,
         Signature = 1,
         ClassLoader = 2,
         Modifiers = 3,

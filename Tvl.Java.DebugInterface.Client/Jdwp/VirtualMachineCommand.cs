@@ -2,6 +2,7 @@
 {
     public enum VirtualMachineCommand : byte
     {
+        Invalid = 0,
         Version = 1,
         ClassesBySignature = 2,
         AllClasses = 3,

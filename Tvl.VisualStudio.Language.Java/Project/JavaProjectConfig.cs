@@ -151,6 +151,13 @@
             if (x64)
                 agentBaseFileName += "X64";
 
+            bool useDevelopmentEnvironment = (grfLaunch & (uint)__VSDBGLAUNCHFLAGS.DBGLAUNCH_NoDebug) == 0;
+
+#if JDWP || true
+            commandLine.AppendSwitch("-Xdebug");
+            string serverValue = useDevelopmentEnvironment ? "y" : "n";
+            commandLine.AppendSwitch("-Xrunjdwp:transport=dt_socket,server=" + serverValue + ",address=6777");
+#else
             string agentFolder = Path.GetDirectoryName(typeof(JavaProjectConfig).Assembly.Location);
             string agentFileName = agentBaseFileName + ".dll";
             string agentPath = Path.GetFullPath(Path.Combine(agentFolder, agentFileName));
@@ -159,6 +166,7 @@
             string agentArguments = GetConfigurationProperty(JavaConfigConstants.DebugAgentArguments, _PersistStorageType.PST_USER_FILE, false);
             if (!string.IsNullOrEmpty(agentArguments))
                 commandLine.AppendTextUnquoted("=" + agentArguments);
+#endif
 
             switch (GetConfigurationProperty(JavaConfigConstants.DebugStartAction, _PersistStorageType.PST_USER_FILE, false))
             {
@@ -207,7 +215,6 @@
 
             info.Arguments = commandLine.ToString();
 
-            bool useDevelopmentEnvironment = (grfLaunch & (uint)__VSDBGLAUNCHFLAGS.DBGLAUNCH_NoDebug) == 0;
             info.Executable = FindJavaBinary("java.exe", useDevelopmentEnvironment);
 
             //info.CurrentDirectory = GetConfigurationProperty("WorkingDirectory", false, _PersistStorageType.PST_USER_FILE);

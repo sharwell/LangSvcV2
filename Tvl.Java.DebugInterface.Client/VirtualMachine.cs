@@ -114,7 +114,7 @@
         {
             try
             {
-                _ipcHandle.WaitOne();
+                //_ipcHandle.WaitOne();
                 _ipcHandle.Dispose();
                 _ipcHandle = null;
 
@@ -132,17 +132,8 @@
 
         private void CreateProtocolServiceClient()
         {
-            var binding = new NetNamedPipeBinding(NetNamedPipeSecurityMode.None)
-            {
-                MaxReceivedMessageSize = 10 * 1024 * 1024,
-                ReceiveTimeout = TimeSpan.MaxValue,
-                SendTimeout = TimeSpan.MaxValue
-            };
-
             DebugProtocolCallback callback = new DebugProtocolCallback(this);
-            var callbackInstance = new InstanceContext(callback);
-            var remoteAddress = new EndpointAddress("net.pipe://localhost/Tvl.Java.DebugHost/DebugProtocolService/");
-            _protocolService = new DebugProtocol.DebugProtocolServiceClient(callbackInstance, binding, remoteAddress);
+            _protocolService = new Jdwp.JdwpDebugProtocolService(callback);
         }
 
         #region IVirtualMachine Members
