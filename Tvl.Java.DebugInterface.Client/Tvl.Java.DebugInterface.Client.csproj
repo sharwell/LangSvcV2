@@ -138,6 +138,10 @@
     <Compile Include="IntegerValue.cs" />
     <Compile Include="InterfaceType.cs" />
     <Compile Include="JavaType.cs" />
+    <Compile Include="Jdwp\CommandSet.cs" />
+    <Compile Include="Jdwp\JdwpDebugProtocolService.cs" />
+    <Compile Include="Jdwp\ReferenceTypeCommand.cs" />
+    <Compile Include="Jdwp\VirtualMachineCommand.cs" />
     <Compile Include="LocalVariable.cs" />
     <Compile Include="Location.cs" />
     <Compile Include="LongType.cs" />
