@@ -259,11 +259,17 @@
                     byte[] bytecode = _location.GetMethod().GetBytecodes();
                     DisassembledMethod disassembledMethod = BytecodeDisassembler.Disassemble(bytecode);
 
-                    ReadOnlyCollection<ExceptionTableEntry> exceptionTable;
-                    if (!_location.GetMethod().TryGetExceptionTable(out exceptionTable))
-                        exceptionTable = new ReadOnlyCollection<ExceptionTableEntry>(new ExceptionTableEntry[0]);
-
                     var constantPool = _location.GetDeclaringType().GetConstantPool();
+                    ReadOnlyCollection<ExceptionTableEntry> exceptionTable;
+                    try
+                    {
+                        exceptionTable = _location.GetMethod().GetExceptionTable();
+                    }
+                    catch (DebuggerException)
+                    {
+                        exceptionTable = new ReadOnlyCollection<ExceptionTableEntry>(new ExceptionTableEntry[0]);
+                    }
+
                     ImmutableList<int?> evaluationStackDepths = BytecodeDisassembler.GetEvaluationStackDepths(disassembledMethod, constantPool, exceptionTable);
                     ReadOnlyCollection<ILocation> locations = _location.GetMethod().GetLineLocations();
 

@@ -14,6 +14,10 @@
             : base(parentPropertyPage)
         {
             InitializeComponent();
+            cmdDebugAgent.Items.Clear();
+            cmdDebugAgent.Items.Add(DebugAgent.CustomJvmti);
+            cmdDebugAgent.Items.Add(DebugAgent.Jdwp);
+
             UpdateStates();
             RefreshCommandLine();
         }
@@ -154,6 +158,19 @@
             set
             {
                 txtRemoteMachine.Text = value;
+            }
+        }
+
+        public DebugAgent DebugAgent
+        {
+            get
+            {
+                return (DebugAgent)cmdDebugAgent.SelectedItem;
+            }
+
+            set
+            {
+                cmdDebugAgent.SelectedItem = value;
             }
         }
 

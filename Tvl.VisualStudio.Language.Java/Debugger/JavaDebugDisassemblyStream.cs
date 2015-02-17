@@ -31,11 +31,17 @@
             _bytecode = _executionContext.Location.GetMethod().GetBytecodes();
             _disassembledMethod = BytecodeDisassembler.Disassemble(_bytecode);
 
-            ReadOnlyCollection<ExceptionTableEntry> exceptionTable;
-            if (!executionContext.Location.GetMethod().TryGetExceptionTable(out exceptionTable))
-                exceptionTable = new ReadOnlyCollection<ExceptionTableEntry>(new ExceptionTableEntry[0]);
-
             var constantPool = executionContext.Location.GetDeclaringType().GetConstantPool();
+            ReadOnlyCollection<ExceptionTableEntry> exceptionTable;
+            try
+            {
+                exceptionTable = executionContext.Location.GetMethod().GetExceptionTable();
+            }
+            catch (DebuggerException)
+            {
+                exceptionTable = new ReadOnlyCollection<ExceptionTableEntry>(new ExceptionTableEntry[0]);
+            }
+
             _evaluationStackDepths = BytecodeDisassembler.GetEvaluationStackDepths(_disassembledMethod, constantPool, exceptionTable);
         }
 

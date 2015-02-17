@@ -134,23 +134,16 @@
             return _bytecode;
         }
 
-        public bool TryGetExceptionTable(out ReadOnlyCollection<ExceptionTableEntry> exceptionTable)
+        public ReadOnlyCollection<ExceptionTableEntry> GetExceptionTable()
         {
             if (_exceptionTable == null)
             {
                 ExceptionTableEntry[] result;
-                Types.Error errorCode = VirtualMachine.ProtocolService.GetMethodExceptionTable(out result, DeclaringType.ReferenceTypeId, MethodId);
-                if (errorCode != Types.Error.None)
-                {
-                    exceptionTable = null;
-                    return false;
-                }
-
+                DebugErrorHandler.ThrowOnFailure(VirtualMachine.ProtocolService.GetMethodExceptionTable(out result, DeclaringType.ReferenceTypeId, MethodId));
                 _exceptionTable = new ReadOnlyCollection<ExceptionTableEntry>(result);
             }
 
-            exceptionTable = _exceptionTable;
-            return true;
+            return _exceptionTable;
         }
 
         public bool GetIsAbstract()

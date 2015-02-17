@@ -476,6 +476,7 @@
     <Compile Include="Project\JavaProjectPackage.cs" />
     <Compile Include="Project\JavaReferenceContainerNode.cs" />
     <Compile Include="Project\NativeMethods.cs" />
+    <Compile Include="Project\PropertyPages\DebugAgent.cs" />
     <Compile Include="Project\PropertyPages\JavaApplicationPropertyPage.cs" />
     <Compile Include="Project\PropertyPages\JavaApplicationPropertyPagePanel.cs">
       <SubType>UserControl</SubType>
