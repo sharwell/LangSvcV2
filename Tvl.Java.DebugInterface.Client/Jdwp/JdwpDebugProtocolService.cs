@@ -249,6 +249,10 @@
                 case EventKind.SingleStep:
                     {
                         RequestId requestId = new RequestId(ReadInt32(packet, ref offset));
+                        RequestId mappedRequestId;
+                        if (_requestRemap.TryGetValue(requestId, out mappedRequestId))
+                            requestId = mappedRequestId;
+
                         ThreadId threadId = (ThreadId)ReadObjectId(packet, ref offset);
                         Location location = ReadLocation(packet, ref offset);
                         _callback.SingleStep(suspendPolicy, requestId, threadId, location);
@@ -1755,8 +1759,52 @@
             throw new NotImplementedException();
         }
 
+        private readonly ConcurrentDictionary<RequestId, List<RequestId>> _linkedRequests =
+            new ConcurrentDictionary<RequestId, List<RequestId>>();
+        private readonly ConcurrentDictionary<RequestId, RequestId> _requestRemap =
+            new ConcurrentDictionary<RequestId, RequestId>();
+
         public Error SetEvent(out RequestId requestId, EventKind eventKind, SuspendPolicy suspendPolicy, EventRequestModifier[] modifiers)
         {
+            if (eventKind == EventKind.SingleStep && modifiers.Length == 1 && modifiers[0].Thread == default(ThreadId))
+            {
+                ThreadId[] threads;
+                Error threadsErrorCode = GetAllThreads(out threads);
+                if (threadsErrorCode != Error.None)
+                {
+                    requestId = default(RequestId);
+                    return threadsErrorCode;
+                }
+
+                requestId = default(RequestId);
+
+                threadsErrorCode = Suspend();
+                if (threadsErrorCode != Error.None)
+                    return threadsErrorCode;
+
+                List<RequestId> requests = new List<RequestId>();
+                foreach (var thread in threads)
+                {
+                    EventRequestModifier modifier = modifiers[0];
+                    modifier.Thread = thread;
+                    threadsErrorCode = SetEvent(out requestId, eventKind, suspendPolicy, new[] { modifier });
+                    if (threadsErrorCode != Error.None)
+                        return threadsErrorCode;
+
+                    requests.Add(requestId);
+                }
+
+                _linkedRequests[requestId] = requests;
+                foreach (var request in requests)
+                    _requestRemap[request] = requestId;
+
+                threadsErrorCode = Resume();
+                if (threadsErrorCode != Error.None)
+                    return threadsErrorCode;
+
+                return Error.None;
+            }
+
             byte[] packet = new byte[HeaderSize + 6];
             packet[HeaderSize] = (byte)eventKind;
             packet[HeaderSize + 1] = (byte)suspendPolicy;
@@ -1896,6 +1944,22 @@
 
         public Error ClearEvent(EventKind eventKind, RequestId requestId)
         {
+            List<RequestId> linkedRequests;
+            if (_linkedRequests.TryRemove(requestId, out linkedRequests))
+            {
+                Suspend();
+
+                foreach (RequestId request in linkedRequests)
+                {
+                    RequestId ignored;
+                    _requestRemap.TryRemove(request, out ignored);
+
+                    ClearEvent(eventKind, request);
+                }
+
+                return Resume();
+            }
+
             byte[] packet = new byte[HeaderSize + sizeof(byte) + sizeof(int)];
             int id = GetMessageId();
             SerializeHeader(packet, id, EventRequestCommand.Clear);
