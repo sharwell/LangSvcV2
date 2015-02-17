@@ -24,8 +24,6 @@
         private readonly ConcurrentDictionary<int, TaskCompletionSource<byte[]>> _tasks =
             new ConcurrentDictionary<int, TaskCompletionSource<byte[]>>();
 
-        private readonly ConcurrentBag<int> _messageIds = new ConcurrentBag<int>();
-
         private int _nextMessageId = 1;
 
         private bool _handshakeComplete;
@@ -451,7 +449,6 @@
             SerializeHeader(packet, id, VirtualMachineCommand.Version);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             Error errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -483,7 +480,6 @@
             Buffer.BlockCopy(encoded, 0, packet, HeaderSize + sizeof(int), encoded.Length);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             Error errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -522,7 +518,6 @@
             SerializeHeader(packet, id, VirtualMachineCommand.AllClassesWithGeneric);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             Error errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -553,7 +548,6 @@
             SerializeHeader(packet, id, VirtualMachineCommand.AllThreads);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             Error errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -582,7 +576,6 @@
             SerializeHeader(packet, id, VirtualMachineCommand.Dispose);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             return ReadErrorCode(response);
         }
 
@@ -593,7 +586,6 @@
             SerializeHeader(packet, id, VirtualMachineCommand.IDSizes);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             Error errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -621,7 +613,6 @@
             SerializeHeader(packet, id, VirtualMachineCommand.Suspend);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             return ReadErrorCode(response);
         }
 
@@ -632,7 +623,6 @@
             SerializeHeader(packet, id, VirtualMachineCommand.Resume);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             return ReadErrorCode(response);
         }
 
@@ -644,7 +634,6 @@
             WriteInt32(packet, HeaderSize, exitCode);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             return ReadErrorCode(response);
         }
 
@@ -660,7 +649,6 @@
             SerializeHeader(packet, id, VirtualMachineCommand.CapabilitiesNew);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             Error errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -732,7 +720,6 @@
             SerializeHeader(packet, id, VirtualMachineCommand.HoldEvents);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             return ReadErrorCode(response);
         }
 
@@ -743,7 +730,6 @@
             SerializeHeader(packet, id, VirtualMachineCommand.ReleaseEvents);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             return ReadErrorCode(response);
         }
 
@@ -765,7 +751,6 @@
             WriteReferenceTypeId(packet, HeaderSize, referenceType);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             Error errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -788,7 +773,6 @@
             WriteReferenceTypeId(packet, HeaderSize, referenceType);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             Error errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -809,7 +793,6 @@
             WriteReferenceTypeId(packet, HeaderSize, referenceType);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             Error errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -830,7 +813,6 @@
             WriteReferenceTypeId(packet, HeaderSize, referenceType);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             Error errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -862,7 +844,6 @@
             WriteReferenceTypeId(packet, HeaderSize, referenceType);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             Error errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -899,7 +880,6 @@
             }
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             Error errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -926,7 +906,6 @@
             WriteReferenceTypeId(packet, HeaderSize, referenceType);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             Error errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -952,7 +931,6 @@
             WriteReferenceTypeId(packet, HeaderSize, referenceType);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             Error errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -973,7 +951,6 @@
             WriteReferenceTypeId(packet, HeaderSize, referenceType);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             Error errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -1000,7 +977,6 @@
             WriteReferenceTypeId(packet, HeaderSize, referenceType);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             Error errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -1021,7 +997,6 @@
             WriteReferenceTypeId(packet, HeaderSize, referenceType);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             Error errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -1047,7 +1022,6 @@
             WriteReferenceTypeId(packet, HeaderSize, referenceType);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             Error errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -1070,7 +1044,6 @@
             WriteReferenceTypeId(packet, HeaderSize, referenceType);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             Error errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -1094,7 +1067,6 @@
             WriteReferenceTypeId(packet, HeaderSize, @class);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             Error errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -1142,7 +1114,6 @@
             WriteMethodId(packet, HeaderSize + ReferenceTypeIdSize, method);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             Error errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -1176,7 +1147,6 @@
             WriteMethodId(packet, HeaderSize + ReferenceTypeIdSize, method);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             Error errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -1211,7 +1181,6 @@
             WriteMethodId(packet, HeaderSize + ReferenceTypeIdSize, method);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             Error errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -1235,7 +1204,6 @@
             WriteMethodId(packet, HeaderSize + ReferenceTypeIdSize, method);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             Error errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -1256,7 +1224,6 @@
             WriteObjectId(packet, HeaderSize, @object);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             Error errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -1284,7 +1251,6 @@
             }
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             Error errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -1381,7 +1347,6 @@
             SerializeHeader(packet, id, ObjectReferenceCommand.InvokeMethod);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             Error errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -1404,7 +1369,6 @@
             WriteObjectId(packet, HeaderSize, @object);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             return ReadErrorCode(response);
         }
 
@@ -1416,7 +1380,6 @@
             WriteObjectId(packet, HeaderSize, @object);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             return ReadErrorCode(response);
         }
 
@@ -1428,7 +1391,6 @@
             WriteObjectId(packet, HeaderSize, @object);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             Error errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -1449,7 +1411,6 @@
             WriteObjectId(packet, HeaderSize, stringObject);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             Error errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -1470,7 +1431,6 @@
             WriteObjectId(packet, HeaderSize, thread);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             Error errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -1491,7 +1451,6 @@
             WriteObjectId(packet, HeaderSize, thread);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             return ReadErrorCode(response);
         }
 
@@ -1503,7 +1462,6 @@
             WriteObjectId(packet, HeaderSize, thread);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             return ReadErrorCode(response);
         }
 
@@ -1515,7 +1473,6 @@
             WriteObjectId(packet, HeaderSize, thread);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             Error errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -1559,7 +1516,6 @@
             WriteInt32(packet, HeaderSize + ThreadIdSize + sizeof(int), length);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             Error errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -1588,7 +1544,6 @@
             WriteObjectId(packet, HeaderSize, thread);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             Error errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -1629,7 +1584,6 @@
             WriteObjectId(packet, HeaderSize, thread);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             Error errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -1665,7 +1619,6 @@
             WriteObjectId(packet, HeaderSize, arrayObject);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             Error errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -1700,7 +1653,6 @@
             WriteInt32(packet, HeaderSize + ObjectIdSize + sizeof(int), length);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             Error errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -1929,7 +1881,6 @@
             SerializeHeader(packet, id, EventRequestCommand.Set);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             Error errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -1967,7 +1918,6 @@
             WriteInt32(packet, HeaderSize + sizeof(byte), requestId.Id);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             return ReadErrorCode(response);
         }
 
@@ -1978,7 +1928,6 @@
             SerializeHeader(packet, id, EventRequestCommand.ClearAllBreakpoints);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             return ReadErrorCode(response);
         }
 
@@ -2042,7 +1991,6 @@
             }
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -2094,7 +2042,6 @@
             WriteFrameId(packet, HeaderSize + ThreadIdSize, frame);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -2124,7 +2071,6 @@
             WriteFrameId(packet, HeaderSize + ThreadIdSize, frame);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             return ReadErrorCode(response);
         }
 
@@ -2136,7 +2082,6 @@
             WriteObjectId(packet, HeaderSize, classObject);
 
             byte[] response = SendPacket(id, packet);
-            ReturnMessageId(id);
             Error errorCode = ReadErrorCode(response);
             if (errorCode != Error.None)
             {
@@ -2251,15 +2196,7 @@
 
         private int GetMessageId()
         {
-            int id;
-            if (_messageIds.TryTake(out id))
-                return id;
-
             return Interlocked.Increment(ref _nextMessageId);
-        }
-
-        private void ReturnMessageId(int id)
-        {
         }
 
         private static string ReadString(byte[] response, ref int offset)
