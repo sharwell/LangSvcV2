@@ -1,6 +1,10 @@
 ﻿namespace Tvl.VisualStudio.Language.Java.Project.PropertyPages
 {
     using System;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using System.Linq;
+    using System.Reflection;
     using CommandLineBuilder = Microsoft.Build.Utilities.CommandLineBuilder;
 
     public partial class JavaDebugPropertyPagePanel : JavaPropertyPagePanel
@@ -17,9 +21,20 @@
             cmdDebugAgent.Items.Clear();
             cmdDebugAgent.Items.Add(DebugAgent.CustomJvmti);
             cmdDebugAgent.Items.Add(DebugAgent.Jdwp);
+            //cmdDebugAgent.DisplayMember = "Value";
+            //cmdDebugAgent.ValueMember = "Key";
+            //cmdDebugAgent.Items.Add(GetDebugAgentComboItem(DebugAgent.CustomJvmti));
+            //cmdDebugAgent.Items.Add(GetDebugAgentComboItem(DebugAgent.Jdwp));
 
             UpdateStates();
             RefreshCommandLine();
+        }
+
+        private static KeyValuePair<DebugAgent, string> GetDebugAgentComboItem(DebugAgent debugAgent)
+        {
+            FieldInfo fieldInfo = typeof(DebugAgent).GetField(debugAgent.ToString());
+            DisplayAttribute displayAttribute = fieldInfo.GetCustomAttributes(typeof(DisplayAttribute), false).OfType<DisplayAttribute>().First();
+            return new KeyValuePair<DebugAgent, string>(debugAgent, displayAttribute.Name);
         }
 
         public new JavaDebugPropertyPage ParentPropertyPage
@@ -165,7 +180,7 @@
         {
             get
             {
-                return (DebugAgent)cmdDebugAgent.SelectedItem;
+                return (DebugAgent)(cmdDebugAgent.SelectedItem ?? DebugAgent.CustomJvmti);
             }
 
             set
@@ -212,7 +227,17 @@
                 string javaPath = projectConfig != null ? projectConfig.FindJavaBinary("java.exe", true) : null;
                 commandLine.AppendFileNameIfNotNull(javaPath);
 
-                commandLine.AppendSwitch("-agentpath:{AgentPath}");
+                string agentSwitch;
+                if (DebugAgent == DebugAgent.Jdwp)
+                {
+                    agentSwitch = "-Xrunjdwp:transport=dt_socket,server=y,address=6777";
+                }
+                else
+                {
+                    agentSwitch = "-agentpath:{AgentPath}";
+                }
+
+                commandLine.AppendSwitch(agentSwitch);
                 if (!string.IsNullOrEmpty(AgentArguments))
                     commandLine.AppendTextUnquoted("=" + AgentArguments);
 

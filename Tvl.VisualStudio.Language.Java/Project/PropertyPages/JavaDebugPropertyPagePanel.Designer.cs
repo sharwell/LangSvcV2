@@ -33,6 +33,7 @@
             System.Windows.Forms.GroupBox groupBox2;
             System.Windows.Forms.Label label1;
             System.Windows.Forms.Label label5;
+            this.cmdDebugAgent = new System.Windows.Forms.ComboBox();
             this.txtRemoteMachine = new System.Windows.Forms.TextBox();
             this.chkUseRemoteMachine = new System.Windows.Forms.CheckBox();
             this.btnBrowseWorkingDirectory = new System.Windows.Forms.Button();
@@ -50,7 +51,6 @@
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.txtAgentArguments = new System.Windows.Forms.TextBox();
             this.txtJvmArguments = new System.Windows.Forms.TextBox();
-            this.cmdDebugAgent = new System.Windows.Forms.ComboBox();
             label3 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             groupBox2 = new System.Windows.Forms.GroupBox();
@@ -97,6 +97,19 @@
             groupBox2.TabIndex = 1;
             groupBox2.TabStop = false;
             groupBox2.Text = "Start Options";
+            // 
+            // cmdDebugAgent
+            // 
+            this.cmdDebugAgent.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmdDebugAgent.FormattingEnabled = true;
+            this.cmdDebugAgent.Items.AddRange(new object[] {
+            "High-performance debug agent (default)",
+            "JDWP debugging (compatibility mode)"});
+            this.cmdDebugAgent.Location = new System.Drawing.Point(190, 157);
+            this.cmdDebugAgent.Name = "cmdDebugAgent";
+            this.cmdDebugAgent.Size = new System.Drawing.Size(318, 21);
+            this.cmdDebugAgent.TabIndex = 7;
+            this.cmdDebugAgent.SelectedValueChanged += new System.EventHandler(this.HandleStateAffectingChange);
             // 
             // txtRemoteMachine
             // 
@@ -290,18 +303,6 @@
             this.txtJvmArguments.Size = new System.Drawing.Size(318, 80);
             this.txtJvmArguments.TabIndex = 1;
             this.txtJvmArguments.TextChanged += new System.EventHandler(this.HandleCommandLineAffectingChange);
-            // 
-            // cmdDebugAgent
-            // 
-            this.cmdDebugAgent.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmdDebugAgent.FormattingEnabled = true;
-            this.cmdDebugAgent.Items.AddRange(new object[] {
-            "High-performance debug agent (default)",
-            "JDWP debugging (compatibility mode)"});
-            this.cmdDebugAgent.Location = new System.Drawing.Point(190, 157);
-            this.cmdDebugAgent.Name = "cmdDebugAgent";
-            this.cmdDebugAgent.Size = new System.Drawing.Size(318, 21);
-            this.cmdDebugAgent.TabIndex = 7;
             // 
             // JavaDebugPropertyPagePanel
             // 

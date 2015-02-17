@@ -651,7 +651,64 @@
 
         public Error GetCapabilities(out Capabilities capabilities)
         {
-            throw new NotImplementedException();
+            byte[] packet = new byte[HeaderSize];
+            int id = GetMessageId();
+            SerializeHeader(packet, id, VirtualMachineCommand.CapabilitiesNew);
+
+            byte[] response = SendPacket(id, packet);
+            ReturnMessageId(id);
+            Error errorCode = ReadErrorCode(response);
+            if (errorCode != Error.None)
+            {
+                capabilities = default(Capabilities);
+                return errorCode;
+            }
+
+            Capabilities[] returnedFields =
+            {
+                Capabilities.CanGenerateFieldModificationEvents,
+                Capabilities.CanGenerateFieldAccessEvents,
+                Capabilities.CanGetBytecodes,
+                Capabilities.CanGetSyntheticAttribute,
+                Capabilities.CanGetOwnedMonitorInfo,
+                Capabilities.CanGetCurrentContendedMonitor,
+                Capabilities.CanGetMonitorInfo,
+                Capabilities.CanRedefineClasses,
+                Capabilities.None, // add method?
+                Capabilities.CanRedefineAnyClass,
+                Capabilities.CanPopFrame,
+                Capabilities.None, // use instance filters?
+                Capabilities.CanGetSourceDebugExtension,
+                Capabilities.None, // request VM death event?
+                Capabilities.None, // set default stratum?
+                Capabilities.None, // get instance info?
+                Capabilities.CanGenerateMonitorEvents,
+                Capabilities.CanGetOwnedMonitorStackDepthInfo,
+                Capabilities.None, // use source name filters?
+                Capabilities.CanGetConstantPool,
+                Capabilities.CanForceEarlyReturn,
+                Capabilities.None, // reserved22
+                Capabilities.None, // reserved23
+                Capabilities.None, // reserved24
+                Capabilities.None, // reserved25
+                Capabilities.None, // reserved26
+                Capabilities.None, // reserved27
+                Capabilities.None, // reserved28
+                Capabilities.None, // reserved29
+                Capabilities.None, // reserved30
+                Capabilities.None, // reserved31
+                Capabilities.None, // reserved32
+            };
+
+            capabilities = Capabilities.None;
+            int offset = HeaderSize;
+            foreach (Capabilities capability in returnedFields)
+            {
+                if (ReadBoolean(response, ref offset))
+                    capabilities |= capability;
+            }
+
+            return Error.None;
         }
 
         public Error GetClassPaths(out string baseDirectory, out string[] classPaths, out string[] bootClassPaths)
@@ -2154,6 +2211,11 @@
             byte result = response[offset];
             offset++;
             return result;
+        }
+
+        private static bool ReadBoolean(byte[] data, ref int offset)
+        {
+            return ReadByte(data, ref offset) != 0;
         }
 
         private static short ReadInt16(byte[] response, ref int offset)

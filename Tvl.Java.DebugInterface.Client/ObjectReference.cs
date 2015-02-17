@@ -111,9 +111,12 @@
         {
             Types.Value returnValue;
             TaggedObjectId thrownException;
-            if (thread != null)
+            if (thread != null || VirtualMachine.GetCanInvokeWithoutThread())
             {
-                ThreadId threadId = ((ThreadReference)thread).ThreadId;
+                ThreadId threadId = default(ThreadId);
+                if (thread != null)
+                    threadId = ((ThreadReference)thread).ThreadId;
+
                 DebugErrorHandler.ThrowOnFailure(VirtualMachine.ProtocolService.InvokeObjectMethod(out returnValue, out thrownException, ObjectId, threadId, (ClassId)((Method)method).DeclaringType.TaggedReferenceTypeId, ((Method)method).MethodId, (Types.InvokeOptions)options, arguments.Cast<Value>().Select(Value.ToNetworkValue).ToArray()));
             }
             else
