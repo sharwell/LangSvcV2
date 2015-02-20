@@ -1,16 +1,19 @@
 ﻿namespace Tvl.VisualStudio.Language.Java.Project
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics.Contracts;
     using Microsoft.VisualStudio;
     using Microsoft.VisualStudio.Project;
     using Tvl.VisualStudio.Shell;
 
     using __VSDBGLAUNCHFLAGS = Microsoft.VisualStudio.Shell.Interop.__VSDBGLAUNCHFLAGS;
+    using __VSDBGLAUNCHFLAGS2 = Microsoft.VisualStudio.Shell.Interop.__VSDBGLAUNCHFLAGS2;
     using _PersistStorageType = Microsoft.VisualStudio.Shell.Interop._PersistStorageType;
     using CommandLineBuilder = Microsoft.Build.Utilities.CommandLineBuilder;
     using DEBUG_LAUNCH_OPERATION = Microsoft.VisualStudio.Shell.Interop.DEBUG_LAUNCH_OPERATION;
     using DebugAgent = Tvl.VisualStudio.Language.Java.Project.PropertyPages.DebugAgent;
+    using Directory = System.IO.Directory;
     using File = System.IO.File;
     using IVsDebugger2 = Microsoft.VisualStudio.Shell.Interop.IVsDebugger2;
     using IVsUIShell = Microsoft.VisualStudio.Shell.Interop.IVsUIShell;
@@ -208,6 +211,26 @@
                 workingDirectory = Path.GetFullPath(Path.Combine(this.ProjectManager.ProjectFolder, workingDirectory));
             }
 
+            // Pass the project references via the CLASSPATH environment variable
+            List<string> classPathEntries = new List<string>();
+            IReferenceContainer referenceContainer = ProjectManager.GetReferenceContainer();
+            IList<ReferenceNode> references = referenceContainer.EnumReferences();
+            foreach (var referenceNode in references)
+            {
+                JarReferenceNode jarReferenceNode = referenceNode as JarReferenceNode;
+                if (jarReferenceNode != null)
+                {
+                    if (File.Exists(jarReferenceNode.InstalledFilePath) || Directory.Exists(jarReferenceNode.InstalledFilePath))
+                        classPathEntries.Add(jarReferenceNode.InstalledFilePath);
+                }
+            }
+
+            if (classPathEntries != null)
+            {
+                string classPath = string.Join(";", classPathEntries);
+                info.Environment.Add("CLASSPATH", classPath);
+            }
+
             //List<string> arguments = new List<string>();
             //arguments.Add(@"-agentpath:C:\dev\SimpleC\Tvl.Java.DebugHost\bin\Debug\Tvl.Java.DebugHostWrapper.dll");
             ////arguments.Add(@"-verbose:jni");
@@ -236,7 +259,7 @@
             Guid localPortSupplier = new Guid("{708C1ECA-FF48-11D2-904F-00C04FA302A1}");
             info.PortSupplier = localPortSupplier;
             info.LaunchOperation = DEBUG_LAUNCH_OPERATION.DLO_CreateProcess;
-            info.LaunchFlags = (__VSDBGLAUNCHFLAGS)grfLaunch;
+            info.LaunchFlags = (__VSDBGLAUNCHFLAGS)grfLaunch | (__VSDBGLAUNCHFLAGS)__VSDBGLAUNCHFLAGS2.DBGLAUNCH_MergeEnv;
 
             var debugger = (IVsDebugger2)Microsoft.VisualStudio.Shell.Package.GetGlobalService(typeof(SVsShellDebugger));
             int result = debugger.LaunchDebugTargets(info);
