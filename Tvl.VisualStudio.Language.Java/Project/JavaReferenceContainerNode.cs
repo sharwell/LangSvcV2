@@ -8,6 +8,7 @@
     using File = System.IO.File;
     using Path = System.IO.Path;
     using VSCOMPONENTSELECTORDATA = Microsoft.VisualStudio.Shell.Interop.VSCOMPONENTSELECTORDATA;
+    using VSCOMPONENTTYPE = Microsoft.VisualStudio.Shell.Interop.VSCOMPONENTTYPE;
 
     [ComVisible(true)]
     public class JavaReferenceContainerNode : ReferenceContainerNode
@@ -30,8 +31,40 @@
         {
             get
             {
-                
                 return _supportedReferenceTypes;
+            }
+        }
+
+        protected override ReferenceNode CreateReferenceNode(VSCOMPONENTSELECTORDATA selectorData, string wrapperTool)
+        {
+            switch (selectorData.type)
+            {
+            case VSCOMPONENTTYPE.VSCOMPONENTTYPE_Custom:
+                return CreateCustomComponent(selectorData, wrapperTool);
+
+            default:
+                return base.CreateReferenceNode(selectorData, wrapperTool);
+            }
+        }
+
+        protected virtual ReferenceNode CreateCustomComponent(VSCOMPONENTSELECTORDATA selectorData, string wrapperTool)
+        {
+            if (selectorData.bstrTitle.StartsWith("maven:"))
+            {
+                string[] mavenData = selectorData.bstrTitle.Split(':');
+                if (mavenData.Length != 5)
+                    throw new ArgumentException();
+
+                string groupId = mavenData[1];
+                string artifactId = mavenData[2];
+                string version = mavenData[3];
+                string classifier = mavenData[4];
+
+                return CreateMavenReferenceNode(groupId, artifactId, version, classifier);
+            }
+            else
+            {
+                throw new InvalidOperationException("Cannot add a custom reference to the specified component");
             }
         }
 
@@ -77,7 +110,7 @@
 
         protected virtual ReferenceNode CreateMavenReferenceNode(ProjectElement element)
         {
-            throw new NotImplementedException();
+            return new MavenReferenceNode(ProjectManager, element);
         }
 
         protected virtual ReferenceNode CreateJarReferenceNode(string fileName)
@@ -85,9 +118,9 @@
             return new JarReferenceNode(ProjectManager, fileName);
         }
 
-        protected virtual ReferenceNode CreateMavenReferenceNode(string fileName)
+        protected virtual ReferenceNode CreateMavenReferenceNode(string groupId, string artifactId, string version, string classifier)
         {
-            throw new NotImplementedException();
+            return new MavenReferenceNode(ProjectManager, groupId, artifactId, version, classifier);
         }
     }
 }

@@ -223,6 +223,13 @@
                     if (File.Exists(jarReferenceNode.InstalledFilePath) || Directory.Exists(jarReferenceNode.InstalledFilePath))
                         classPathEntries.Add(jarReferenceNode.InstalledFilePath);
                 }
+
+                MavenReferenceNode mavenReferenceNode = referenceNode as MavenReferenceNode;
+                if (mavenReferenceNode != null)
+                {
+                    if (File.Exists(mavenReferenceNode.InstalledFilePath) || Directory.Exists(mavenReferenceNode.InstalledFilePath))
+                        classPathEntries.Add(mavenReferenceNode.InstalledFilePath);
+                }
             }
 
             if (classPathEntries != null)

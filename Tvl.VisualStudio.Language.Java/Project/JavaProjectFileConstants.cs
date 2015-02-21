@@ -10,6 +10,13 @@
         public const string SourceFolder = "SourceFolder";
         public const string TestSourceFolder = "TestSourceFolder";
 
+        // Maven-specific metadata properties
+        public const string Repository = "Repository";
+        public const string GroupId = "GroupId";
+        public const string ArtifactId = "ArtifactId";
+        public const string Version = "Version";
+        public const string Classifier = "Classifier";
+
         public const string JavaArchiveOutputType = "jar";
         public const string HotspotTargetVirtualMachine = "Hotspot";
         public const string JRockitTargetVirtualMachine = "JRockit";

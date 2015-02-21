@@ -447,6 +447,7 @@
       <DependentUpon>JavaIntellisenseOptionsControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Project\Automation\OAJarReference.cs" />
+    <Compile Include="Project\Automation\OAMavenReference.cs" />
     <Compile Include="Project\Extensions\CommandLineBuilderExtensions.cs" />
     <Compile Include="Project\Controls\FileBrowserTextBox.cs">
       <SubType>UserControl</SubType>
@@ -476,6 +477,8 @@
     <Compile Include="Project\JavaProjectNode.cs" />
     <Compile Include="Project\JavaProjectPackage.cs" />
     <Compile Include="Project\JavaReferenceContainerNode.cs" />
+    <Compile Include="Project\MavenReferenceNode.cs" />
+    <Compile Include="Project\MavenReferenceProperties.cs" />
     <Compile Include="Project\NativeMethods.cs" />
     <Compile Include="Project\PropertyPages\DebugAgent.cs" />
     <Compile Include="Project\PropertyPages\JavaApplicationPropertyPage.cs" />
@@ -619,6 +622,9 @@
     <Compile Include="Text.Language\LanguageElementsChangedEventArgs.cs" />
     <EmbeddedResource Include="Project\PropertyPages\JavaApplicationPropertyPagePanel.resx">
       <DependentUpon>JavaApplicationPropertyPagePanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Project\PropertyPages\MavenComponentSelector.resx">
+      <DependentUpon>MavenComponentSelector.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Project\Resources\imagelis.bmp" />
     <Content Include="VSIXProject_large.png">

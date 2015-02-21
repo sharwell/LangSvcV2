@@ -3,6 +3,7 @@
     using System;
     using System.Runtime.InteropServices;
     using Tvl.VisualStudio.Shell;
+    using VSCOMPONENTTYPE = Microsoft.VisualStudio.Shell.Interop.VSCOMPONENTTYPE;
 
     [ComVisible(true)]
     [Guid(JavaProjectConstants.MavenComponentSelectorGuidString)]
@@ -35,7 +36,13 @@
 
         protected override ComponentSelectorData[] GetSelection()
         {
-            return new ComponentSelectorData[0];
+            ComponentSelectorData data = new ComponentSelectorData
+            {
+                ComponentType = VSCOMPONENTTYPE.VSCOMPONENTTYPE_Custom,
+                Title = string.Format("maven:{0}:{1}:{2}:{3}", txtGroupId.Text, txtArtifactId.Text, txtVersion.Text, txtClassifier.Text)
+            };
+
+            return new[] { data };
         }
     }
 }
