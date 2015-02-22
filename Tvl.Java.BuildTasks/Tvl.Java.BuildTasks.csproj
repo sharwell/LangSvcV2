@@ -106,6 +106,7 @@
     <Compile Include="Javac.cs" />
     <Compile Include="JavaToolTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ResolveMavenReference.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildToolsPath)\Microsoft.Common.targets">

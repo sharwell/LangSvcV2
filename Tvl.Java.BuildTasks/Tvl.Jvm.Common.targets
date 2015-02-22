@@ -24,6 +24,7 @@ Based on Microsoft.Common.targets, Copyright (C) Microsoft Corporation. All righ
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\$(MSBuildThisFile)\ImportBefore\*" Condition="'$(ImportByWildcardBeforeTvlJvmCommonTargets)' == 'true' and exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\$(MSBuildThisFile)\ImportBefore')"/>
 
   <UsingTask Condition="'$(JavaBuildTaskPath)'==''" TaskName="Tvl.Java.BuildTasks.Jar" AssemblyFile="Tvl.Java.BuildTasks.dll" />
+  <UsingTask Condition="'$(JavaBuildTaskPath)'==''" TaskName="Tvl.Java.BuildTasks.ResolveMavenReference" AssemblyFile="Tvl.Java.BuildTasks.dll" />
 
   <PropertyGroup>
     <CustomBeforeTvlJvmCommonTargets Condition="'$(CustomBeforeTvlJvmCommonTargets)'==''">$(MSBuildExtensionsPath)\Java\Custom.Before.$(MSBuildThisFile)</CustomBeforeTvlJvmCommonTargets>
@@ -1028,6 +1029,7 @@ Based on Microsoft.Common.targets, Copyright (C) Microsoft Corporation. All righ
       ResolveAssemblyReferences;
       ResolveComReferences;
       ResolveJarReferences;
+      ResolveMavenReferences;
       AfterResolveReferences
     </ResolveReferencesDependsOn>
   </PropertyGroup>
@@ -1661,6 +1663,38 @@ Based on Microsoft.Common.targets, Copyright (C) Microsoft Corporation. All righ
     <ItemGroup>
       <ReferencePath Include="@(JarReference)" Condition="'%(JarReference.IncludeInBuild)'!='false'" />
     </ItemGroup>
+  </Target>
+
+  <!--
+    ============================================================
+                                        ResolveMavenReferences
+
+    Resolve Maven references
+
+        [IN]
+        @(MavenReference) - The list of Maven references
+
+        [OUT]
+        @(ReferencePath) - Paths to referenced wrappers.
+    ============================================================
+    -->
+
+  <Target Name="ResolveMavenReferences"
+          Condition="'@(MavenReference)' != ''"
+          Returns="@(ReferencePath)">
+
+    <!--
+        Note: This task should not be batched, since it relies on having all the Maven references fed into it at once.
+    -->
+    <ResolveMavenReference
+      References="@(MavenReference)"
+      Repositories="@(MavenRepository)"
+      PackageFolder="packages">
+
+      <Output TaskParameter="ResolvedFiles" ItemName="ReferencePath"/>
+
+    </ResolveMavenReference>
+
   </Target>
 
   <!--
