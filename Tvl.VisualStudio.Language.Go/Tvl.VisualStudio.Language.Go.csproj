@@ -164,6 +164,7 @@
     <Antlr3 Include="GoTypeFormatter.g3">
       <Generator>MSBuild:Compile</Generator>
     </Antlr3>
+    <None Include="app.config" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
