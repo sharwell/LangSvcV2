@@ -103,7 +103,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="Chapel.g3.lexer.cs">
       <DependentUpon>Chapel.g3</DependentUpon>
     </None>

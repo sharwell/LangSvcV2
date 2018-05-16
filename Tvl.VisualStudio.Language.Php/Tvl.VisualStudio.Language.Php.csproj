@@ -183,7 +183,6 @@
       <CustomToolNamespace>Tvl.VisualStudio.Language.Php.Projection</CustomToolNamespace>
       <TargetLanguage>CSharp_v4_0</TargetLanguage>
     </Antlr4>
-    <None Include="app.config" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>

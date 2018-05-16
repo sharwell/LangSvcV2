@@ -241,7 +241,6 @@
     <Compile Include="V4\SmartIndent.cs" />
     <Compile Include="V4\SmartIndentProvider.cs" />
     <Compile Include="V4\V4GrammarClassifierLexerState.cs" />
-    <None Include="app.config" />
     <None Include="V4\Antlr4QuickSearchItemProvider.cs" />
     <None Include="V4\Antlr4QuickSearchItemProviderFactory.cs" />
     <Compile Include="V4\Antlr4BackgroundParser.cs" />

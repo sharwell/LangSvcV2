@@ -163,7 +163,6 @@
     <Compile Include="AlloySignatureHelpSourceProvider.cs" />
     <Compile Include="AlloyTextStructureNavigator.cs" />
     <Compile Include="AlloyTextStructureNavigatorProvider.cs" />
-    <None Include="app.config" />
     <None Include="Experimental\AlloyAtnBuilder.cs" />
     <Compile Include="Experimental\AlloyAtnEditorNavigationSource.cs" />
     <Compile Include="Experimental\AlloyAtnEditorNavigationSourceProvider.cs" />
